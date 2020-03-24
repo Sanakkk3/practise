@@ -1,8 +1,9 @@
 --类型限定符
-const类型的对象在程序执行期间不能被修改改变。
-修饰符volatile告诉编译器不需要优化volatile声明的变量，让程序可以直接从内存中读取变量。对于一般的变量编译器会对变量进行优化。将内存中的变量值放在寄存器中以加快读写效率。
-由restrict修饰的指针是唯一一种访问它所指向的对象的方式。
-声明explicit的构造函数不能再隐式转换中使用。（使构造函数不可隐示调用，需要显示调用）
+·const类型的对象在程序执行期间不能被修改改变。
+修饰符volatile告诉编译器不需要优化volatile声明的变量，让程序可以直接从内存中读取变量。对于一般的变量编译器会对变量进行优化，将内存中的变量值放在寄存器中以加快读写效率。
+（volitile可以保证对特殊地址的稳定访问。）
+·由restrict修饰的指针是唯一一种访问它所指向的对象的方式。
+·声明explicit的构造函数不能再隐式转换中使用。（使构造函数不可隐示调用，需要显示调用）
 例如：
 class Test1
 {
@@ -31,3 +32,34 @@ int main()
     Test2 t2(12);//显式调用成功
     return 0;
 }
+
+--存储类
+·auto声明变量时根据初始化表达式自动判断该变量的类型、声明函数时函数返回值的占位符。
+·register
+·static
+·extern
+·mutable
+·thread_local
+
+--Lambda函数与表达式（对匿名函数的支持）
+·Lambda表达式把函数看做对象。该表达式可以像对象一样使用，比如可以将他们赋给变量和作为参数传递，还可以像函数一样对其求值。
+·形式如：[capture list](params list)mutable exception->return type{function body}
+`capture list:捕获外部变量列表
+`params list:形参列表
+`mutable（指示符）:是否可以修改捕获的变量。默认情况下，Lambda函数总是一个const函数，mutable可以取消常量性。在使用该修饰符时，参数列表不可省略（参数为空）
+`exception:异常设定
+`return type:返回类型，可不需要声明返回值（连同->一起省略），此时返回类型相当于用decltype根据返回值推断得到。
+`function body:函数体
+·使用格式：
+1、[capture list](params list)->return type{function body}
+注：省略mutable和异常，默认为const类型表达式，不可改变捕获列表中的值。
+2、[capture list](params list){function body}
+注：省略了返回值类型，可以通过函数定义的主体部分return来确定返回值，没有return则为void类型。
+3、[capture list]{function body}
+注：省略了形参列表，即函数为无参函数。
+
+
+
+
+
+
