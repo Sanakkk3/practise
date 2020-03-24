@@ -1,0 +1,33 @@
+--类型限定符
+const类型的对象在程序执行期间不能被修改改变。
+修饰符volatile告诉编译器不需要优化volatile声明的变量，让程序可以直接从内存中读取变量。对于一般的变量编译器会对变量进行优化。将内存中的变量值放在寄存器中以加快读写效率。
+由restrict修饰的指针是唯一一种访问它所指向的对象的方式。
+声明explicit的构造函数不能再隐式转换中使用。（使构造函数不可隐示调用，需要显示调用）
+例如：
+class Test1
+{
+public:
+    Test1(int n)
+    {
+        num=n;
+    }//普通构造函数
+private:
+    int num;
+};
+class Test2
+{
+public:
+    explicit Test2(int n)
+    {
+        num=n;
+    }//explicit(显式)构造函数
+private:
+    int num;
+};
+int main()
+{
+    Test1 t1=12;//隐式调用其构造函数,成功
+    Test2 t2=12;//编译错误,不能隐式调用其构造函数
+    Test2 t2(12);//显式调用成功
+    return 0;
+}
