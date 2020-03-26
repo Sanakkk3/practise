@@ -1,0 +1,134 @@
+--C++强制类型转换
+·static_cast用于数据类型的强制转换，强制将一种诗句类型转换为另一个数据类型。
+形式：static_cast<类型说明符>（变量或表达式）
+eg：
+int a=10;
+int b=3;
+double result=stetic_cast<double>(a)/static_cast<double>(b);
+
+·const_cast用于强制去掉这种不能被修改的常数特性。const_cast不是用于去除变量的常量性，而是去除指向常数对象的指针或引用的常量性。注：对象必须是指针或引用。
+eg：
+#include<iostream>
+using namespace std;
+
+int main()
+{
+    const int a = 10;    
+    const int * p = &a;
+    int *q;
+    q = const_cast<int *>(p);
+    *q = 20;    //fine
+    cout <<a<<" "<<*p<<" "<<*q<<endl;
+        cout <<&a<<" "<<p<<" "<<q<<endl;
+    return 0;
+}
+运行结果：
+10 20 20
+002CFAF4 002CFAF4 002CFAF4
+
+·reinterpert_cast
+1、改变指针或引用的类型。
+2、将指针或引用转换为一个足够长度的整形。
+3、讲整形转换为指针或引用类型。
+
+--内联函数（inline）
+·通常在程序设计过程中，我们会将一些频繁被调用的短小函数声明为内联函数。
+注：为了使得inline声明内联函数有效，我们必须将inline关键字与函数体放在一起才行。
+eg:
+void swap(int &a, int &b);
+inline void swap(int &a, int &b)
+{
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+--C++ new和delete操作符（new和delete是C++关键字）
+·C++中，new、new[]、delete和delete[]操作符会被用来动态分配内存和释放内存。
+·new用于动态分配当个空间<-->delete用来释放。
+·new[]用于动态分配一个数组<-->delete[]用于释放。
+eg：
+int *p=new int; <--> delete p;
+int *p=new int[10]; <-->delete[] p;
+
+--异常处理
+·C++新增throw关键字用于抛出异常，新增catch关键字用于捕获异常，新增try关键字尝试捕获异常。通常将尝试捕获的语句放在 try{ } 程序块中，而将异常处理语句置于 catch{ } 语句块中。
+异常处理的基本语法如下所述。首先说一下抛出异常的基本语法：
+$   throw 表达式;
+抛出异常由throw关键字加上一个表达式构成。抛出异常后需要捕获异常以及异常处理程序，其基本语法如下：
+try
+{
+    //可能抛出异常的语句
+}
+catch (异常类型1)
+{
+    //异常类型1的处理程序
+}
+catch (异常类型2)
+{
+    //异常类型2的处理程序
+}
+// ……
+catch (异常类型n)
+{
+    //异常类型n的处理程序
+}
+eg:
+#include<iostream>
+using namespace std;
+
+enum index{underflow, overflow};
+
+int array_index(int *A, int n, int index);
+
+int main()
+{
+    int *A = new int[10];
+    for(int i=0; i<10; i++)
+        A[i] = i;
+    try
+    {
+        cout<<array_index(A,10,5)<<endl;
+        cout<<array_index(A,10,-1)<<endl;
+        cout<<array_index(A,10,15)<<endl;
+    }
+    catch(index e)
+    {
+        if(e == underflow)
+        {
+            cout<<"index underflow!"<<endl;
+            exit(-1);
+        }
+        if(e == overflow)
+        {
+            cout<<"index overflow!"<<endl;
+            exit(-1);
+        }
+    }
+
+    return 0;
+}
+
+int array_index(int *A, int n, int index)
+{
+    if(index < 0) throw underflow;
+    if(index > n-1) throw overflow;
+    return A[index];
+}
+
+
+$  由try程序块捕获throw抛出的异常，然后依据异常类型运行catch程序块中的异常处理程。catch程序块顺序可以是任意的，不过均需要放在try程序块之后。
+在前面我们介绍了new和delete动态分配内存操作符，如果new或new[]不能成功分配所请求的，将会抛出一个bad_alloc异常。在使用new或new[]操作符分配动态内存，可以通过如下方式检测并捕获存储空间分配失败的异常。
+eg：
+[例2] 捕获new、new[] 抛出的异常：
+
+int * p;
+try
+{
+    p = new int[10];
+}
+catch(bad_alloc)
+{
+    cerr<<"allocate failure!"<<endl;
+    exit(-1);
+}
