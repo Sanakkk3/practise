@@ -5,4 +5,78 @@ class student
     //可以在此处声明类成员变量和成员函数
 };
 注：类声明结束处右括号 “{” 后面有一个 “;” 。
+·用法和C中的struct结构体相似。
+
+--两种给出成员函数的定义：
+1、在类内部进行函数的声明和定义，这种方式称inline，即内联定义。inline是C++关键字。
+eg：
+class student
+{
+    char name[20];  //姓名
+    int id_num;     //学号
+    int age;        //年龄
+    char sex;       //性别
+    void set_age(int a){age = a;}
+    int get_age(){return age;}
+};
+
+2、在类内部进行函数声明，在类外部进行函数定义。
+eg：
+class student
+{
+    char name[20];  //姓名
+    int id_num;     //学号
+    int age;        //年龄
+    char sex;       //性别
+    void set_age(int a);
+    int get_age()const;
+};
+//在类外部定义set_age函数
+void student::set_age(int a)
+{
+    age = a;
+}
+//在类外部定义get_age函数
+int student::get_age()const
+{
+    return age;
+}
+该例子中采用了域解析符 “::” 。
+
+在类内声明函数，如果在函数声明时使用inline关键字，如例4所示，则可以将类内声明类外定义的函数强制转换为内联函数。
+[例4] 强制转换为内联函数：
+eg：
+class student
+{
+    char name[20];  //姓名
+    int id_num;     //学号
+    int age;        //年龄
+    char sex;       //性别
+    inline void set_age(int a);
+    inline int get_age();
+};
+//在类外部定义set_age函数
+void student::set_age(int a)
+{
+    age = a;
+}
+//在类外部定义get_age函数
+int student::get_age()
+{
+    return age;
+}
+
+--C++信息隐藏机制
+·类内部，无论成员变量或成员函数被声明为private、public或protected属性，均可相互访问，无访问权限限制。
+·类外，通过对象无法访问private和protected属性的成员变量和成员函数，而仅可以访问public属性的成员变量和成员函数。
+
+
+
+
+
+
+
+
+
+
 
