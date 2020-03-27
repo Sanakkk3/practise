@@ -69,7 +69,188 @@ int student::get_age()
 --C++信息隐藏机制
 ·类内部，无论成员变量或成员函数被声明为private、public或protected属性，均可相互访问，无访问权限限制。
 ·类外，通过对象无法访问private和protected属性的成员变量和成员函数，而仅可以访问public属性的成员变量和成员函数。
+#include<iostream>
+using namespace std;
 
+class book
+{
+public:
+    void setprice(double a);
+    double getprice();
+private:
+    double price;
+};
+
+void book::setprice(double a)
+{
+    price = a;
+}
+
+double book::getprice()
+{
+    return price;
+}
+
+int main()
+{
+    book Alice;
+    Alice.setprice(29.9);
+    cout<<"The price of Alice is $"<<Alice.getprice()<<endl;   
+    return 0;
+}
+
+·通过对象访问public属性的成员变量或成员函数。访问可以通过成员选择符 “.” 或指针操作符 “->”来完成。
+·在C++中，struct与class基本是通用的，唯一不同的是如果使用class关键字，类中定义的成员变量或成员函数默认都是private属性的，而采用struct关键字，结构体中定义的成员变量或成员函数默认都是public属性的。
+
+--通常来讲，除非是迫不得已，否则最好不要采用传值的方式传递和返回对象，这是因为采用传值的方式传递和返回对象的过程中需要经历对象间的拷贝操作，这样会在一定程度上降低程序运行的效率，从而使得待处理数据量增大，增加内存的使用。而采用引用或指针的方式则不会有这样的问题，而实际上，因为引用表达更加简练直观，因此也较少使用指针来传递对象或作为函数返回值。
+#include<iostream>
+using namespace std;
+
+class book
+{
+public:
+    void setprice(double a);
+    double getprice();
+    void settitle(char* a);
+    char * gettitle();
+private:
+    double price;
+    char * title;
+};
+
+void book::setprice(double a)
+{
+    price = a;
+}
+
+double book::getprice()
+{
+    return price;
+}
+
+void book::settitle(char* a)
+{
+    title = a;
+}
+
+char * book::gettitle()
+{
+    return title;
+}
+
+void display(book & b)
+{
+    cout<<"The price of "<<b.gettitle()<<" is $"<<b.getprice()<<endl;
+}
+
+book & init(char *t, double p)
+{
+    static book b;  //静态对象也很关键
+    b.settitle(t);
+    b.setprice(p);
+    return b;
+}
+
+int main()
+{
+    book Alice;
+    Alice.settitle("Alice in Wonderland");
+    Alice.setprice(29.9);
+    display(Alice);
+    book Harry;
+    Harry = init("Harry Potter", 49.9);
+    display(Harry);   //将对象的引用返回给Harry对象。
+    return 0;
+}
+程序最终运行结果如下：
+The price of Alice in Wonderland is $29.9
+The price of Harry Potter is $49.9
+$这个例子向我们展示了通过引用的方式来传递和返回对象，需要注意的是函数返回一个对象的引用的时候，最好该对象不是局部变量或临时变量（如果是局部变量或临时变量，一旦该函数运行结束，该局部变量或临时变量很有可能会被系统销毁），如本例中init函数在定义b对象时前面加上了一个static关键字，将b对象声明为一个静态对象。
+
+
+--构造函数
+构造函数是类中一种特殊的成员函数，其特殊之处有三点：
+·构造函数的函数名必须与类名相同；
+·构造函数无返回值；
+·当我们创建类对象的时候构造函数会被自动调用，而无需我们主动调用。
+一个类中可以有多个构造函数，构造函数之间构成函数重载的关系。（构造函数就是用于初始化对象，并且负责处理对象创建时需要处理的其它事物，在创建对象时会被自动调用。）
+
+eg：
+class book
+{
+public:
+    book(){}
+    book(char* a, double p);
+    void setprice(double a);
+    double getprice();
+    void settitle(char* a);
+    char * gettitle();
+    void display();
+private:
+    double price;
+    char * title;
+};
+
+book::book(char *a, double p):title(a),price(p){}   //注意这句
+&如本例所示，本例在定义带参构造函数book(char *a, double p)时，不再是在函数体中一一赋值进行初始化，其函数体为空。在函数首部与函数体之间增添了一个冒并加上title(a),price(p)语句，这个语句的意思相当于函数体内部的 title = a; price = p; 语句。这样做对于两个成员变量的类来说看不出什么优势，但是一旦当成员变量非常多的时候，通过参数初始化列表进行初始化其优势便可以显现出来了，如此写法简洁明了。
+&初始化const成员变量的唯一方法只有利用参数初始化表。
+eg:             
+class Array
+{
+public:
+    Array(): length(0)
+    {
+        num = NULL;
+    };
+private:
+    const int length;
+    int * num;
+};
+
+--C++使用默认参数的构造函数
+eg：
+#include<iostream>
+using namespace std;
+
+class book
+{
+public:
+    book(){}
+    book(char* a, double p = 5.0); //注：需要说明的是带默认参数的构造函数，其默认参数必须置于参数列表的结尾。
+    void display();
+private:
+    double price;
+    char * title;
+};
+
+book::book(char* a, double p)  //在定义函数的时候可以不指定默认参数
+{
+    title = a;
+    price = p;
+}
+
+void book::display()
+{
+    cout<<"The price of "<<title<<" is $"<<price<<endl;
+}
+
+int main()
+{
+    book Harry("Harry Potter", 49.9);
+    Harry.display();
+    book Gone("Gone with the Wind");
+    Gone.display();
+    return 0;
+}
+&在本例中，book类中的带参构造函数 book(char* a, double p = 5.0); 将价格设置为5.0，如此一来p就被设置成为一个默认参数，如果在创建对象的时候，没有传递实参给该参数p，则该参数会被默认设置为5.0。
+程序运行结果如下：
+The price of Harry Potter is $49.9
+The price of Gone with the Wind is $5.0
+
+--构造函数分：默认构造函数和带参构造函数。带参构造函数又分：拷贝构造函数和转型构造函数。
+1、转型构造函数：
+·关键字explicit可以强制关掉隐式类型转换。
+2、拷贝构造函数：
 
 
 
