@@ -249,10 +249,66 @@ The price of Gone with the Wind is $5.0
 
 --构造函数分：默认构造函数和带参构造函数。带参构造函数又分：拷贝构造函数和转型构造函数。
 1、转型构造函数：
+eg：
+class student
+{
+public:
+    student(){}
+    student(char * n){name = n;}
+private :
+    char * name;
+}
+void fun(student s); //函数声明
+char * name = “Harry Potter”;
+fun(name);
 ·关键字explicit可以强制关掉隐式类型转换。
 2、拷贝构造函数：
+·通过拷贝对象的方式创建一个新对象。
+·有两种原型：
+1、book（book &b）；     //注意：book（book b）；是不能通过编译的。
+2、book（const book &b）；
+·拷贝构造函数除了能有对象引用这样的参数之外，同样也能有其它参数。但是其它参数必须给出默认值。例如下面这种拷贝构造函数声明方式。
+eg：
+book(const book &b, price = 5.0);
+$如果类的设计人员不在类中显示的声明一个拷贝构造函数，则系统会自动地为类生成一个拷贝构造函数，自动生成的拷贝构造函数功能简单，只能将源对象的所有成员变量一一复制给当前创建的对象。
 
+--C++析构函数
+·创建对象的时候系统会自动调用构造函数，在对象需要被销毁的时候同样系统会自动调用一个函数，这个函数被称之为析构函数。析构函数就是用于回收创建对象时所消耗的各种资源。与构造函数类似，析构函数也是一个成员函数。析构函数与普通成员函数相比，有如下特征：
+1、无返回值。
+2、没有参数，不能被重载，因此一个类也只能含有一个析构函数。
+3、函数名必须为“~类名”的形式，符号“~”与类名之间可以有空格。
+·说到析构函数，则其调用顺序则不得不介绍一下了。析构函数与构造函数调用顺序是反转过来的，先调用构造函数的后调用构造函数。我们通过下面的例子来加以说明。
+eg：
+#include<iostream>
+using namespace std;
 
+class test
+{
+public:
+    test(int i){num = i;cout<<num<<" Constructor"<<endl;}
+    ~test(){cout<<num<<" Destructor"<<endl;}
+private:
+    int num;
+};
+
+int main()
+{
+    test t0(0);
+    test t1(1);
+    test t2(2);
+    test t3(3);
+    return 0;
+}
+程序运行结果：
+0  Constructor
+1  Constructor
+2  Constructor
+3  Constructor
+3  Destructor
+2  Destructor
+1  Destructor
+0  Destructor
+$从这个程序运行不难看出，析构函数的调用顺序与构造函数调用顺序正好是相反的，为了方便记忆，我们可以将之理解为一个栈，先入后出。
 
 
 
