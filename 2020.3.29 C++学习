@@ -1,0 +1,339 @@
+--const关键字
+$const成员变量
+·const成员变量其用法和普通的const变量用法相似，在定义时只需在前面加上const关键字即可。const成员变量的初始化只有唯一的一条途径：参数初始化表.
+$const成员函数
+·const成员函数可以使用类中的所有成员变量，但是不能修改变量的值，这种措施主要还是为了保护数据而设置的。
+eg：
+class book
+{
+public:
+    book(){}
+    book(char* a, double p = 5.0);
+        void setprice(double a);
+        void settitle(char* a);
+    double getprice()const;   
+    char * gettitle()const;
+private:
+    double price;
+    char * title;
+};
+
+double book::getprice()const
+{
+    return price;
+}
+
+char * book::gettitle()const
+{
+    return title;
+}
+·常成员函数可以访问类中的任何成员变量，但是不能修改任何成员变量。而普通的成员函数不能访问常对象的成员变量，其它的成员变量都可以访问，普通的成员函数可以修改的成员变量也只有非const成员变量了，一旦加上了const关键字加以修饰，初始化完成后就不能被修改了。还有一点需要注意的是const成员函数是不能调用类中非const成员函数的。
+$const对象
+const对象定义的基本语法如下：
+1、const 类名 对象名(实参名);
+2、类名 const 对象名(实参名);
+·有些时候我们在程序设计过程中要求修改常对象中的某个成员变量，这个时候如果是普通的成员变量是不能被修改的。为了满足这一需求，C++提供了mutable关键字。
+形式：
+·mutable int var;
+·通过这样的声明将变量var声明为可变的成员变量，此时如果要修改常对象的该变量时，只需要通过常对象调用const成员函数修改该变量即可。
+
+--C++类与static关键字
+注：
+·到目前为止，我们设计的类中所有的成员变量和成员函数都是属于对象的，如我们在前面定义的book类，利用book类声明两个对象Alice和Harry，这两个对象均拥有各自的price和title成员变量，同时还拥有类中所有的成员函数。
+·除了这种情况以外，我们还有另外一种类型的成员，那就是与static结合的成员变量和成员函数。类中的成员变量或成员函数一旦与static关键字相结合，则该成员变量或成员函数就是属于类的，而不是再是属于任何一个对象的，当然任何一个对象都可以共享该成员变量及成员函数。
+$静态成员变量
+·静态成员变量在类内部声明之后还需要进行定义操作。
+eg：
+class student
+{
+public:
+    student(){count ++;}   //static和const还是有点区别的。
+    ~student(){count --;}
+private:
+    static int count;
+    //其它成员变量
+};
+int student::count = 0;  //注：首先静态成员变量的定义必须在任何程序块之外。
+注：其次调用该变量的时候可以直接用类名加上域解析符“::”加上变量名的形式，这是静态成员变量特有的引用方式；在类外部进行定义的时候static关键字是不需要的。
+
+$静态成员变量属于类而不属于任何一个对象，如此一来可以实现数据共享功能，如例3所示。
+eg:
+#include<iostream>
+using namespace std;
+
+
+class test
+{
+public:
+    static int num;
+};
+int test::num = 1;
+
+int main()
+{
+    test one;
+    test two;
+    test three;
+    cout<<test::num<<" "<<one.num<<" "<<two.num<<" "<<three.num<<endl;
+    test::num = 5;
+    cout<<test::num<<" "<<one.num<<" "<<two.num<<" "<<three.num<<endl;
+    one.num = 8;
+    cout<<test::num<<" "<<one.num<<" "<<two.num<<" "<<three.num<<endl;
+    two.num = 4;
+    cout<<test::num<<" "<<one.num<<" "<<two.num<<" "<<three.num<<endl;
+    three.num = 2;
+    cout<<test::num<<" "<<one.num<<" "<<two.num<<" "<<three.num<<endl;
+    return 0;
+}
+·程序运行结果：
+1 1 1 1
+5 5 5 5
+8 8 8 8
+4 4 4 4
+2 2 2 2
+
+$静态成员函数
+·在类内除了能用static声明静态成员变量外，同样可以使用static声明静态成员函数，静态成员函数只能访问static成员。
+eg：
+#include<iostream>
+using namespace std;
+
+
+class test
+{
+public:
+    test(int a, int b){num = a; plus = b;}
+    static int getnum(){return num;}
+    static int add(){return num+plus;}  //compile error
+    void setnum(int a){num = a;}
+    void setplus(int a){plus = a;}
+private:
+    static int num;
+    int plus;
+};
+int test::num = 1;
+
+int main()
+{
+    test one;
+    one.setnum(5);
+    cout<<test::getnum()<<endl;
+    return 0;
+}
+·静态成员函数只能访问静态成员变量，而不能访问非静态成员变量。普通成员函数（包括构造函数和析构函数）既可以访问普通成员变量，同时又可以访问静态成员变量。
+
+
+--注：访问静态成员变量和静态成员函数均有两种方式，其一是和普通的成员变量成员函数相同，通过对象来访问，其二则是可以通过类名加上域解析操作符访问。当然访问过程中仍然要遵循private、protected和public关键字的访问权限限定。访问静态成员变量和静态成员函数首选的方法是通过类来访问，毕竟静态成员变量和静态成员函数都是属于类的，与类相关联，而不是属于类的对象。普通成员变量或成员函数不可以通过类来访问。由于静态成员变量和静态成员函数都是属于类，而不是属于对象，因此静态成员函数内部也不存在this指针，因为静态成员函数不属于对象。
+
+--注：在静态成员函数内部可以声明静态变量，注意不是静态成员变量。如果在静态成员函数内部声明一个静态变量，则该类的所有对象将共享这个变量。
+eg：
+#include<iostream>
+using namespace std;
+
+
+class test
+{
+public:
+    static void add(int a);
+};
+
+void test::add(int a)
+{
+    static int num = 0;
+    int count = 0;
+    num += a;
+    count += a;
+    cout<<num<<" "<<count<<endl;
+}
+
+
+int main()
+{
+    test one,two,three;
+    one.add(5);
+    two.add(4);
+    three.add(11);
+    return 0;
+}
+程序运行结果：
+5 5
+9 4
+20 11     //明显所有对象共享了num这个静态变量。
+
+--C++友好函数和友好类
+·通过friend关键字，我们可以将不属于当前类的一个函数在当前类中加以声明，该函数便可以成为当前类的友元函数。
+eg：
+#include<iostream>
+using namespace std;
+
+class book
+{
+public:
+    book(){}
+    book(char* a, double p);
+    friend void display(book &b);  //注：友元函数的形参是类对象的引用。
+private:
+    double price;
+    char * title;
+};
+
+book::book(char* a, double p) 
+{
+    title = a;
+    price = p;
+}
+
+void display(book &b)
+{
+    cout<<"The price of "<<b.title<<" is $"<<b.price<<endl;
+}
+
+int main()
+{
+    book Alice("Alice in Wonderland",29.9);
+    display(Alice);
+    book Harry("Harry potter", 49.9);
+    display(Harry);
+    return 0;
+}
+·这就是友元函数的作用。//友元函数可以访问这个类中的私有成员。//如果这个display函数不是book类的友元函数，则在函数体中还必须调用public属性的成员函数。在此例中需要注意的是友元函数的形参是类对象的引用，同时在访问私有成员变量时必须要加上对象名。
+
+￥除了顶层函数可以被定义为友元函数之外，其它类的成员函数同样可以声明为本类的友元函数，如例2所示。
+eg：
+#include<iostream>
+using namespace std;
+
+class time;
+
+class date
+{
+public:
+    date(int y,int m,int d);
+    void display(time &t);
+private:
+    int year;
+    int month;
+    int day;
+};
+
+class time
+{
+public:
+    time(int s,int m,int h);
+    friend void date::display(time & t);
+private:
+    int second;
+    int minute;
+    int hour;
+};
+
+time::time(int s,int m,int h)
+{
+    second = s;
+    minute = m;
+    hour = h;
+}
+
+date::date(int y,int m,int d)
+{
+    year = y;
+    month = m;
+    day = d;
+}
+
+void date::display(time &t)
+{
+    cout<<"The time is:"<<endl;
+    cout<<year<<"/"<<month<<"/"<<day<<" ";
+    cout<<t.hour<<":"<<t.minute<<":"<<t.second<<endl;
+}
+
+int main()
+{
+    date d(2015,1,16);
+    time t(20,2,30);
+    d.display(t);
+    return 0;
+}
+·在本例中定义了两个类time和date，在time类中有hour、minute和second三个成员变量，分别代表时分秒，在date类中有year、month和day三个成员变量，分别代表年月日信息。为了能够共同显示年月日时分秒信息，我们在date类中声明了一个display函数，并且将该函数设置为time类的友元函数，如此一来，该函数既能访问date类中的私有成员变量，同时又能访问time类中的私有成员变量，打印时间自然不在话下。
+//注：
+1、首先要注意的是date类的定义必须出现在time类之前，这么做是为了使得display函数的函数声明能够在声明为友元函数之前。
+2、其次，display函数的形参为time类对象的引用，而time类又必须定义在date类之后，如此一来只能先将time类声明在date类之前了，如class time;这一语句即是为了声明time类。
+3、第三点就是需要将display函数的定义放到time类定义的后面，这是因为display函数中必须用到time类中的私有成员变量，因此在使用之前，这些成员变量必须先声明出来。
+$这三个需要注意顺序的地方需要大家特别关注一下，顺序一定不能搞错了，否则都是无法通过编译的。
+
+#除了可以利用friend关键字声明友元函数之外，我们还可以将其它类声明为当前类的友元类。友元类声明的语法非常简单，即为“friend 类名;”。
+eg:
+#include<iostream>
+using namespace std;
+
+class time;
+class date
+{
+public:
+    date(int y,int m,int d);
+    void display(time &t);
+private:
+    int year;
+    int month;
+    int day;
+};
+
+class time
+{
+public:
+    friend date;
+    time(int s,int m,int h);
+private:
+    int second;
+    int minute;
+    int hour;
+};
+
+time::time(int s,int m,int h)
+{
+    second = s;
+    minute = m;
+    hour = h;
+}
+
+date::date(int y,int m,int d)
+{
+    year = y;
+    month = m;
+    day = d;
+}
+
+void date::display(time &t)
+{
+    cout<<"The time is:"<<endl;
+    cout<<year<<"/"<<month<<"/"<<day<<" ";
+    cout<<t.hour<<":"<<t.minute<<":"<<t.second<<endl;
+}
+
+int main()
+{
+    date d(2015,1,16);
+    time t(20,2,30);
+    d.display(t);
+    return 0;
+}
+//在本例中，我们将date类声明为time类的友元类，则此时date类中的所有成员函数都将转化为time类的友元函数，可以访问time类中的所有成员。毫无疑问，date类中display函数同样也会成为time类的友元，因此利用time类对象t的引用便可以访问time类的私有成员变量了。此函数中类的声明及定义、函数的声明及定义位置同样需要注意。
+
+$关于友元还有几点需要注意：
+·例3中我们将date类声明为time类的友元类，此时date类中的所有函数都将成为time类的友元函数。
+·date类是time类的友元类，但是time类不是date类的友元类。友元关系是单向的，而不是双向的。如果需要将time类也声明名为date类的友元类，则需要另外在date类中声明。
+·友元关系不能传递，假设A类是B类的友元类，B类是C类的友元类，这两点并不能得出A类是C类的友元类。
+·友元类会破坏数据的安全性，使用时宁缺毋滥。如果不是能够极大提高程序运行效率的情况，最好不要用友元。
+
+
+
+
+
+
+
+
+
+
+
+
