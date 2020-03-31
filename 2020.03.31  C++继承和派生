@@ -1,0 +1,161 @@
+·继承可以理解为一个类从另一个类获取方法（函数）和属性（成员变量）的过程。如果类B继承于类A，那么B就拥有A的方法和属性。被继承的类称为父类或基类，继承的类称为子类或派生类。
+eg:
+enum language{cpp, java, python,javascript, php, ruby};
+
+class book
+{
+public:
+    void setprice(double a);
+    double getprice()const;
+    void settitle(char* a);
+    char * gettitle()const;
+    void display();
+private:
+    double price;
+    char * title;
+};
+
+class codingbook: public book
+{
+public :
+    void setlang(language lang);
+    language getlang(){return lang;}
+private:
+    language lang;
+};
+·为了方便起见，我们先在类定义前声明了一个全局的枚举类型language，用于表示编程语言。book类我们已经很熟悉了，关键是codingbook类的定义。在定义codingbook类时多出了“: public book”，除此之外codingbook类的定义和上一章介绍的类定义方法没有什么差别。其中关键字public指明继承方式属于公有继承，book为被继承的类名。采用公用继承方式，则基类的公有成员变量和成员函数的属性继承到派生类后不发生变化。例如book类的公有的setprice和settitle成员函数继承到codingbook类后，这两个成员变量的属性仍将是public属性。如果在继承过程中不指名继承方式时，编译器系统会默认继承方式为private或protected属性。
+·在本例中因为已经定义过一个book类，具有book类的基本属性：书名和书的价格。现在需要一个新的类codingbook来描述编程类书籍，为此我们继承book类中的所有成员及成员函数，并新增language属性及相应的操作函数。虽然我们可以继承到book类的私有成员，但是book类的私有成员变量在派生类中我们是无法直接访问的，只能通过间接的方式访问。间接访问则是通过getprice、gettitle、setprice和settitle函数来实现的，因为这些函数在派生类中是public属性的。
+
+--C++继承方式
+·从基类派生出派生类，派生类继承基类的继承方式有三种：public、protected和private。
+ //注：在未指定的情况下编译器会默认继承方式为protected或private方式。
+
+1) public继承方式
+基类中所有public成员在派生类中为public属性；
+基类中所有protected成员在派生类中为protected属性；
+基类中所有private成员在派生类中不可访问。
+具体示例可以参考上一节中的例1，在此就不再重新举例了。
+2) protected继承方式
+基类中的所有public成员在派生类中为protected属性；
+基类中的所有protected成员在派生类中为protected属性；
+基类中的所有private成员在派生类中仍然不可访问。
+3) private继承方式
+基类中的所有public成员在派生类中均为private属性；
+基类中的所有protected成员在派生类中均为private属性；
+基类中的所有private成员在派生类中均不可访问
+
+--C++改变基类成员在派生类中的访问属性
+·使用using声明可以改变基类成员在派生类中的访问属性。我们知道基类的公有成员经过公有继承，在派生类中其属性为public的，但是通过using 声明，我们可以将其改为private或protected属性。
+eg：
+enum language{cpp, java, python,javascript, php, ruby};
+
+class book
+{
+public:
+    void setprice(double a);
+    double getprice()const;
+    void settitle(char* a);
+    char * gettitle()const;
+    void display();
+private:
+    double price;
+    char * title;
+};
+
+class codingbook: public book
+{
+public :
+    void setlang(language lang);
+    language getlang(){return lang;}
+private:
+    language lang;
+    using book::setprice; //此时在private里面用了using，setprice属性从public变位private。
+};
+
+--C++名字隐藏
+·如果派生类中新增一个成员变量，该成员变量与基类中的成员变量同名，则新增的成员变量就会遮蔽从基类中继承过来的成员变量。同理，如果派生类中新增的成员函数与基类中的成员函数同名，则该新增的成员函数就会遮蔽从基类中继承过来的成员函数。
+eg：
+#include<iostream>
+using namespace std;
+
+class basic
+{
+public:
+    void setx(int a){x = a;}
+    void sety(int b){y = b;}
+    int getx(){return x;}
+    int gety(){return y;}
+private:
+    int x;
+    int y;
+};
+
+class derived : public basic
+{
+public:
+    void setx(char *a){x = a;}
+    char* getx(){return x;}
+private:
+    char * x;
+};
+
+int main()
+{
+    derived d1;
+    d1.setx("class");   //OK
+    d1.setx(50);        //compile error
+    d1.basic::setx(50); //OK
+    return 0;
+}
+$从上例中，我们可以看出被遮蔽了的基类的成员变量或成员函数并非是没有继承过来，而仅仅是被派生类的同名成员变量和成员函数给遮蔽了，调用的时候需要用到类名加上域解析操作符。
+
+--C++间接继承
+·假设类C继承自类B，类B继承自类A。那么类C中的除了能够继承B类的成员函数和成员变量外，同样也能继承B类继承自A类的所有成员。换言之，类C可以继承来自类A的所有成员。因此继承既可以是直接继承，也可以是间接继承。
+eg：
+class A
+{
+public:
+    int getx(){return x;}
+    void setx(int a){x = a;}
+private:
+    int x;
+};
+
+class B : public A
+{
+public:
+    int gety(){return y;}
+    void sety(int b){y = b;}
+private:
+    int y;
+};
+
+class C : public B
+{
+public:
+    int getz(){return z;}
+    void setz(int c){z = c;}
+private:
+    int z;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
