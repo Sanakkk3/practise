@@ -2,6 +2,7 @@
 ·在前一章节中，我们介绍了构造函数的功能和用法，派生类同样有构造函数。当我们创建一个派生类对象的时候，基类构造函数将会被自动调用，用于初始化派生类从基类中继承过来的成员变量。而派生类中新增的成员变量则需要重新定义构造函数用于初始化了。
  <就有点类似JAVA了>
  &&  http://www.weixueyuan.net/view/6363.html //这章有点东西。
+ &&  辅助理解：https://www.cnblogs.com/yongpan/p/7631793.html
  eg:
  #include<iostream>
 using namespace std;
@@ -27,6 +28,7 @@ class codingbook: public book
 {
 public :
     codingbook():book(){lang = none;}   //疑惑的点，为什么要添上book()
+    //定义派生类的构造函数时，显示调用基类的构造函数。注：定义和声明是不一样的。这个时候codingbook()在定义，而下面那个构造函数还处于声明当中。
     codingbook(language lang, char * t, double p);
     void setlang(language lang);
     language getlang(){return lang;}
@@ -101,6 +103,7 @@ The price of NoTitle is $0
 The language is 0
 The price of Thinking in Java is $59.9
 The language is 2
+$构造函数的调用顺序是按照继承的层次，自顶向下，从基类再到派生类的。
 
 
 
