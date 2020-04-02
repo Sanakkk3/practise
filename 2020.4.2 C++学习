@@ -1,0 +1,121 @@
+--C++派生类构造函数调用规则
+·派生类构造函数可以自动调用基类的默认构造函数而无需显式调用。
+eg： 前面codingbook():book(){lang=none;}可写成codingbook(){lang=none;}.
+$$ 派生类构造函数可以自动调用基类的默认构造函数，但是前提是默认构造函数必须存在。通常情况下，默认构造函数系统会自动生成的，但是如果在基类中，我们自己定义了一个带参数的构造函数，这个时候，系统是不会为基类自动生成默认构造函数的，这个时候派生类则无法自动调用基类的默认构造函数了，因为基类根本就不存在默认构造函数。遇到这种情况有两种解决方案：其一，在基类中定义一个默认构造函数（不带参数的构造函数），例如上一节中的例2；其二，派生类中的每一个构造函数都显式的调用基类中的带参构造函数。
+$$ 总的来说，在创建派生类对象时，必须显式或隐式地调用基类的某一个构造函数，这一点非常重要。当然被调用的基类的构造函数可以是带参构造函数，也可以是默认构造函数。
+
+
+--C++继承机制下的析构函数
+·创建派生类对象时构造函数的调用顺序是按照继承顺序，先执行基类构造函数，然后再执行派生类的构造函数。但是对于析构函数，其调用顺序是正好相反的。
+eg：
+#include <iostream>
+using namespace std;
+
+class A
+{
+public:
+    A(){cout<<"A constructor"<<endl;}
+    ~A(){cout<<"A destructor"<<endl;}
+};
+
+class B: public A
+{
+public:
+    B(){cout<<"B constructor"<<endl;}
+    ~B(){cout<<"B destructor"<<endl;}
+};
+
+class C: public B
+{
+public:
+    C(){cout<<"C constructor"<<endl;}
+    ~C(){cout<<"C destructor"<<endl;}
+};
+
+int main()
+{
+    C test;
+    return 0;
+}
+运行结果如下：
+A constructor
+B constructor
+C constructor
+C destructor
+B destructor
+A destructor
+
+--C++多继承
+·单继承：派生类都只有一个基类。
+·多继承：C++中一个派生类中允许有两个及以上的基类。
+
+
+--C++虚基类
+$$ 在多继承时很容易产生命名冲突问题，如果我们很小心地将所有类中的成员变量及成员函数都命名为不同的名字时，命名冲突依然有可能发生，比如非常经典的菱形继承层次。类A派生出类B和类C，类D继承自类B和类C，这个时候类A中的成员变量和成员函数继承到类D中变成了两份，一份来自A派生B然后派生D这一路，另一份来自A派生C然后派生D这一条路。
+$$ C++提供了虚继承这一方式解决命名冲突问题。虚继承只需要在继承属性前加上virtual关键字。
+eg:
+#include <iostream>
+using namespace std;
+
+class A
+{
+public:
+    void setx(int a){x = a;}
+    int getx(){return x;}
+private:
+    int x;
+};
+
+class B: virtual public A
+{
+public:
+    void sety(int a){y = a;}
+    int gety(){return y;}
+private:
+    int y;   
+};
+
+class C: virtual public A
+{
+public:
+    void setz(int a){z = a;}
+    int getz(){return z;}
+private:
+    int z;
+};
+
+class D: public B, public C
+{
+    //......
+};
+
+int main()
+{
+    D test;
+    test.setx(10);
+    cout<<test.getx()<<endl;
+    return 0;
+}
+$$ 在本例中，类B和类C都是继承类A都是虚继承，如此操作之后，类D只会得到一份来自类A的数据。在本例的主函数中，定义了类D的对象test，然后通过该对象调用从类A间接继承来的setx和getx成员函数，因为B和C继承自类A采用的是虚继承，故通过D调用setx和getx不会有命名冲突问题，因为D类只得到了一份A的数据。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
