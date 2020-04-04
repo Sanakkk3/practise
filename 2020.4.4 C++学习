@@ -1,0 +1,126 @@
+--C++抽象基类和纯虚成员函数
+·公共接口是指一系列成员函数的集合，支持该接口的类必须以合适的方式重新定义这些成员函数，否则就无法创建对象。在C++中，可以通过抽象基类来实现公共接口。
+·纯虚成员函数的声明语法如下：
+    virtual 函数返回类型 函数名 (函数参数) = 0;  //这看起来和虚函数还是有点子区别呢。
+·纯虚成员函数没有函数体，只有函数声明，在纯虚函数声明结尾加上“=0”表明此函数为纯虚成员函数。 
+·包含纯虚成员函数的类即为抽象基类，之所以说它抽象，那是因为它无法实例化，也即无法用于创建对象。
+$$包含纯虚成员函数的类即为抽象基类。
+$$纯虚成员函数可以被派生类继承，如果派生类不重新定义抽象基类中的所有（有多个则要重新定义多个）纯虚成员函数，则派生类同样会成为抽象基类，因而也不能用于创建对象。
+//注：只有类中的虚函数才能被声明为纯虚成员函数，普通成员函数和顶层函数均不能声明为纯虚成员函数。如例3中企图将顶层函数和普通的成员函数声明为纯虚成员函数，这都是不允许的。
+eg：
+void fun() = 0;   //compile error
+class base
+{
+public :
+    void display() = 0;  //compile error
+    //......
+};
+
+
+--C++dynamic_cast操作符
+·在C++中，编译期的类型转换有可能会在运行时出现错误，特别是涉及到类对象的指针或引用操作时，更容易产生错误。Dynamic_cast操作符则可以在运行期对可能产生问题的类型转换进行测试。
+eg：
+#include<iostream>
+using namespace std;
+class base
+{
+public :
+    void m(){cout<<"m"<<endl;}
+};
+class derived : public base
+{
+public:
+    void f(){cout<<"f"<<endl;}
+};
+int main()
+{
+    derived * p;
+    p = new base;
+    p = static_cast<derived *>(new base);//注：基类指针可以指向派生类，但是派生类指向基类容易出错。因此可以通过强制类型转换将派生类指针指向一个基类对象。
+    p->m();//基类中包含m函数，这句话没问题。
+    p->f();//一般来讲，因为p指针是一个派生类类型的指针，而派生类中拥有f函数，因此p->f();这一语句不会有问题，但是本例中p指针指向的确实基类的对象，而基类中并没有声明f函数，虽然p->f();这一语句虽然仍没有语法错误，但是它却产生了一个运行时的错误。换言之，p指针是派生类指针，这表明程序设计人员可以通过p指针调用派生类的成员函数f，但是在实际的程序设计过程中却误将p指针指向了一个基类对象，这就导致了一个运行期错误。
+    return 0;
+}
+$$产生这种运行期的错误原因在于static_cast强制类型转换时并不具有保证类型安全的功能，而C++提供的dynamic_cast却能解决这一问题，dynamic_cast可以在程序运行时检测类型转换是否类型安全。当然dynamic_cast使用起来也是有条件的，它要求所转换的操作数必须包含多态类类型（即至少包含一个虚函数的类）。
+//dynamic_cast要求被转换类型必须为多态类类型。 //我怀疑是
+//dynamic_cast要求<>内部所描述的目标必须为指针或引用。
+eg：
+#include<iostream>
+using namespace std;
+
+class base
+{
+public :
+    virtual void m(){cout<<"m"<<endl;}
+};
+
+class derived : public base
+{
+public:
+    virtual void f(){cout<<"f"<<endl;}
+};
+
+int main()
+{
+    derived * d;
+    d = dynamic_cast<derived *>(new base);
+    if(d)
+    {
+        cout<<"Base to Derived is ok"<<endl;
+        delete d;
+    }
+    else
+        cout<<"Base to Derived is error"<<endl;
+    base * b;
+    b = dynamic_cast<base *>(new derived);
+    if(b)
+    {
+        cout<<"Derived to Base is ok"<<endl;
+        delete b;
+    }
+    else
+        cout<<"Derived to Base is error"<<endl;
+
+    return 0;
+}
+·本例最终运行结果如下：
+    Base to Derived is error
+    Derived to Base is ok
+·在初始化过程中dynamic_cast会检测操作数new base转换为目标类型derived *是否能保证类型安全，如果类型安全则将new base结果赋给p指针，否则返回0，也即false。
+·从程序运行结果不难看出，任意两个不相关的多态类类型之间的转换也是不能进行的。
+$$总结一下dynamic_cast转换规则，只允许指向派生类对象的指针转换为指向基类对象的指针。
+$$C++提供的两个类型转换操作符static_cast和dynamic_cast，static_cast可以用于任何类型的强制类型转换，但是它不保证转换过程中的类型安全，dynamic_cast只能用于多态类类型的转换，而且要求转换的目的类型必须为指针或引用，并且它可以保证转换过程中类型安全。
+
+
+--C++typeid操作符
+·typeid操作符用于判断表达式的类型，注意它和sizeof一样是一个操作符而不是函数。如果需要使用typeid操作符，最好加上typeinfo头文件。
+·操作符typeid返回的是一个type_info类（用于描述数据类型的一个系统类）对象的引用。这个操作符可以用于表达式和类型名（包括自定的数据类型，比如类）。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
