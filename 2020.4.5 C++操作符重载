@@ -1,0 +1,290 @@
+--C++基本操作符重载
+·操作符重载指的是将C++提供的操作符进行重新定义，使之满足我们所需要的一些功能。
+·在C++中可以重载的操作符有：
++  -  *  /  %  ^  &  |  ~  !  =  <  >  +=  -=  *=  /=  %=  ^=  &=  |= 
+<<  >>  <<=  >>=  ==  !=  <=  >=  &&  ||  ++  --  ,  ->*  ->  ()  [] 
+new  new[]  delete  delete[]
+eg：
+#include <iostream>
+using namespace std;
+
+class complex
+{
+public:
+    complex();
+    complex(double a);
+    complex(double a, double b);
+    complex operator+(const complex & A)const; //我觉得可以这么看operator表示操作数，然后重载符号（参数）。
+    complex operator-(const complex & A)const;
+    complex operator*(const complex & A)const;
+    complex operator/(const complex & A)const;
+    void display()const;
+private:
+    double real;   //复数的实部
+    double imag;   //复数的虚部
+};
+
+complex::complex()
+{
+    real = 0.0;
+    imag = 0.0;
+}
+
+complex::complex(double a)
+{
+    real = a;
+    imag = 0.0;
+}
+
+complex::complex(double a, double b)
+{
+    real = a;
+    imag = b;
+}
+
+//打印复数
+void complex::display()const
+{
+    cout<<real<<" + "<<imag<<" i ";
+}
+
+//重载加法操作符
+complex complex::operator+(const complex & A)const
+{
+    complex B;
+    B.real = real + A.real;
+    B.imag = imag + A.imag;
+    return B;
+}
+
+//重载减法操作符
+complex complex::operator-(const complex & A)const
+{
+    complex B;
+    B.real = real - A.real;
+    B.imag = imag - A.imag;
+    return B;
+}
+
+//重载乘法操作符
+complex complex::operator*(const complex & A)const
+{
+    complex B;
+    B.real = real * A.real - imag * A.imag;
+    B.imag = imag * A.real + real * A.imag;
+    return B;
+}
+
+//重载除法操作符
+complex complex::operator/(const complex & A)const
+{
+    complex B;
+    double square = A.real * A.real + A.imag * A.imag;
+    B.real = (real * A.real + imag * A.imag)/square;
+    B.imag = (imag * A.real - real * A.imag)/square;
+    return B;
+}
+
+int main()
+{
+    complex c1(4.3, -5.8);
+    complex c2(8.4, 6.7);
+    complex c3;
+   
+    //复数的加法
+    c3 = c1 + c2;   //以加法为例子，c1作为参考，则函数中直接写的real和image就是c1的实数和负数部分，A.real和A.image就是c2的实数和虚数部分。               
+    cout<<"c1 + c2 = ";
+    c3.display();
+    cout<<endl;
+   
+    //复数的减法
+    c3 = c1 - c2;
+    cout<<"c1 - c2 = ";
+    c3.display();
+    cout<<endl;
+   
+    //复数的乘法
+    c3 = c1 * c2;
+    cout<<"c1 * c2 = ";
+    c3.display();
+    cout<<endl;
+   
+    //复数的除法
+    c3 = c1 / c2;
+    cout<<"c1 / c2 = ";
+    c3.display();
+    cout<<endl;
+   
+    return 0;
+}
+·由于系统会给类生成一个默认的拷贝构造函数，因此采用传值的形式将计算结果返回没有问题。//这句话我不理解。
+$$加法操作符二元操作符，但是将其作为成员函数声明时则只需要有一个参数即可，如果重载的操作符是一元操作符，并将其作为类的成员函数，则不需要参数。
+eg:
+class test
+{
+public:
+    test operator!(); //
+};
+
+
+--C++重载操作符的优先级
+·重载操作符不能改变操作符的优先级和语法特性。例如上一节复数类中的加法操作符重载函数，重载后加法的优先级仍然保持不变，重载后仍然为二元操作符。
+eg：
+int main()
+{
+    complex c1,c2,c3,c4;
+        //......
+    c4 = c1 + c2 * c3;
+    return 0;
+}
+
+
+--C++用顶层函数重载操作符
+·在前面两节中，我们是将操作符重载函数声明为类的成员函数，其实除了能将操作符重载函数声明为类的成员函数之外，我们也可以将操作符重载函数声明为顶层函数。在前面将操作符重载函数声明为类成员函数时，我们不断强调二元操作符，其函数参数为一个，一元操作符重载函数不需要函数参数。但是一旦将操作符重载函数声明为顶层函数时，则必须至少有一个类对象参数，否则的话编译器无法区分操作符是系统内建的还是程序设计人员自己定义的，有了一个类对象参数之后，系统则会根据情况调用内建或自定的操作符。如果以顶层函数的形式重载操作符时，二元操作符重载函数必须有两个参数，一元操作符重载必须有一个参数。
+//顶层函数估计就是不是类成员函数的函数吧。
+eg：
+#include <iostream>
+using namespace std;
+
+class complex
+{
+public:
+    complex();
+    complex(double a);
+    complex(double a, double b);
+    double getreal() const { return real; }
+    double getimag() const { return imag; }
+    void setreal(double a){ real = a; }
+    void setimag(double b){ imag = b; }
+    void display()const;
+private:
+    double real;   //复数的实部
+    double imag;   //复数的虚部
+};
+
+complex::complex()
+{
+    real = 0.0;
+    imag = 0.0;
+}
+
+complex::complex(double a)
+{
+    real = a;
+    imag = 0.0;
+}
+
+complex::complex(double a, double b)
+{
+    real = a;
+    imag = b;
+}
+
+//打印复数
+void complex::display()const
+{
+    cout<<real<<" + "<<imag<<" i ";
+}
+
+//注：重载操作符函数中的参数都是引用的形式。
+//重载加法操作符
+complex operator+(const complex & A, const complex &B)  //这个跟之前相比，好理解了很多。
+{
+    complex C;
+    C.setreal(A.getreal() + B.getreal());
+    C.setimag(A.getimag() + B.getimag());
+    return C;
+}
+
+//重载减法操作符
+complex operator-(const complex & A, const complex &B)
+{
+    complex C;
+    C.setreal(A.getreal() - B.getreal());
+    C.setimag(A.getimag() - B.getimag());
+    return C;
+}
+
+//重载乘法操作符
+complex operator*(const complex & A, const complex &B)
+{
+    complex C;
+    C.setreal(A.getreal() * B.getreal() - A.getimag() * B.getimag() );
+    C.setimag(A.getimag() * B.getreal() + A.getreal() * B.getimag() );
+    return C;
+}
+
+//重载除法操作符
+complex operator/(const complex & A, const complex & B)
+{
+    complex C;
+    double square = A.getreal() * A.getreal() + A.getimag() * A.getimag();
+    C.setreal((A.getreal() * B.getreal() + A.getimag() * B.getimag())/square);
+    C.setimag((A.getimag() * B.getreal() - A.getreal() * B.getimag())/square);
+    return C;
+}
+
+int main()
+{
+    complex c1(4.3, -5.8);
+    complex c2(8.4, 6.7);
+    complex c3;
+   
+    c3 = c1 + c2;
+    cout<<"c1 + c2 = ";
+    c3.display();
+    cout<<endl;
+
+    c3 = c1 - c2;
+    cout<<"c1 - c2 = ";
+    c3.display();
+    cout<<endl;
+
+    c3 = c1 * c2;
+    cout<<"c1 * c2 = ";
+    c3.display();
+    cout<<endl;
+
+    c3 = c1 / c2;
+    cout<<"c1 / c2 = ";
+    c3.display();
+    cout<<endl;
+
+    return 0;
+}
+·以顶层函数的形式重载操作符，其调用方法与普通函数调用类似。
+·例如本节中的例1中的复数类，我们调用加法重载函数时可以采用如下方法：
+    complex c1, c2, c3;
+    c3 = operator+( c1, c2); //或者c3=c1+c2;
+//注：重载操作符函数作为顶层函数和成员函数的定义和调用方法有点区别。
+$$$我们总结一下，以类成员函数的形式进行操作符重载，操作符左侧的操作数必须为类对象；而以顶层函数的形式进行操作符重载，只要类中定义了相应的转型构造函数，操作符左侧或右侧的操作数均可以不是类对象，但其中必须至少有一个类对象，否则调用的就是系统内建的操作符而非自己定义的操作符重载函数了。
+//其中complex（double a）就是转型构造函数。
+
+·如果我们将操作符重载函数这些顶层函数声明为类的友元函数，那么就可以直接访问类的私有成员变量了。
+·即把重载函数的顶层函数在类中声明一下，前面加上friend。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
