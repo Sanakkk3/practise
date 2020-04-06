@@ -1,0 +1,132 @@
+--C++string类型变量的定义
+·头文件#include<stirng.h>
+eg：
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s1;  //没有进行初始化，系统会将默认值赋予给是，默认值为""（空字符串）。  
+    string s2 = "string"; //注：与C风格的char类型组不同，string类型的变量结尾是没有'\0'的。
+    string s3 = s2;
+    string s4 (10, 's');//即"ssssssssss"(10个s组成的字符串)。
+    return 0;
+}
+·string类型提供了length函数。
+eg：
+string s = "string";
+int len = s.length();
+
+·转换为char数组字符串
+·虽然C++提供了string类型来替代C语言中的字符数组形式的字符串，但是我们在程序设计过程中还是不可避免地会碰到需要用字符数组形式字符串的地方。为此，系统为我们提供了一个转换函数c_str，该函数将string类型的变量转换为一个const的字符串数组的指针。
+eg：
+string filename = "input.txt";
+ifstream in;
+in.open(filename.c_str());
+
+
+--C++ string类型变量的输入与输出
+
+
+--C++ string类型字符串的连接
+·对于string类型变量，我们可以直接用“+”或者“+=”进行字符串的连接，操作符非常方便。用“+”风格字符串进行字符串连接时，操作符左右两边既可以都是string字符串，也可以是一个string字符串和一个C风格的字符串，还可以是一个string字符串和一个char字符。而用“+=”风格字符串进行字符串连接时，操作符右边既可以是一个string字符串，也可以是一个C风格字符串或一个char字符。
+eg：
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+    string s1, s2, s3;
+    s1 = "first";
+    s2 = "second";
+    s3 = s1 + s2;
+    cout<< s3 <<endl;
+    s2 += s1;
+    cout<< s2 <<endl;
+    s1 += "third";
+    cout<< s1 <<endl;
+    s1 += 'a';
+    cout<< s1 <<endl;
+    return 0;
+}
+
+
+--C++修改字符串
+·string字符串同样可以先字符串数组那样按照下标逐一访问字符串中的每一个字符，string字符串的起始下标仍是从0开始。
+·erase函数可以删除string类型变量中的一个子字符串。erase函数有两个参数，第一个参数是要删除的子字符串的起始下标，第二参数是要删除子字符串的长度，如果第二个参数不指名的话则是直接从第一个参数获取起始下标，然后一直删除至字符串结束。
+·函数insert可以在string字符串中指定的位置插入另一个字符串，该函数同样有两个参数，第一个参数表示插入位置，第二参数表示要插入的字符串，第二个参数既可以是string变量，又可以是C风格的字符串。
+·replace函数可以用一个指定的字符串来替换string类型变量中的一个子字符串，该函数有三个参数，第一个参数表示待替换的子字符串的其实下标，第二个参数表示待替换子字符串的长度，第三个参数表示要替换子字符串的字符串。第三个参数同样可以是string类型变量或C风格字符串。
+·swap函数可以用于将两个string 类型变量的值互换。
+
+
+--C++提取字符串
+·函数substr可以提取string字符串中的子字符串，该函数有两个参数，第一个参数为需要提取的子字符串的起始下标，第二个参数是需要提取的子字符串的长度。
+
+--C++查找字符串
+·find函数可以在字符串中查找子字符串中出现的位置。该函数有两个参数，第一个参数是待查找的子字符串，第二个参数是表示开始查找的位置，如果第二个参数不指名的话则默认从0开始查找，也即从字符串首开始查找。
+·rfind函数与find函数很类似，同样是在字符串中查找子字符串，不同的是find函数是从第二个参数开始往后查找，而rfind函数则是最多查找到第二个参数处，如果到了第二个参数所指定的下标还没有找到子字符串，则返回一个无穷大值4294967295（find函数也是这样）。
+//注：find和rfind函数，感觉就是查找子字符串的首字母出现的下表，若查到，则返回首字母出现的的下表。
+·find_first_of函数是用于查找子字符串和字符串共同具有的字符在字符串中出现的位置。
+eg：
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s1 = "first second second third";
+    string s2 = "asecond";
+    int index = s1.find_first_of(s2);
+    if(index < s1.length())
+        cout<<"Found at index : "<< index <<endl;
+    else
+        cout<<"Not found"<<endl;
+    return 0;
+}//本例中s1和s2共同具有的字符是’s’，该字符在s1中首次出现的下标是3，故查找结果返回3。
+
+·find_first_not_of函数则相反，它查找的是在s1字符串但不在s2字符串中的首位字符的下标，如果查找不成功则返回无穷大。
+
+
+--C++字符串的比较
+·“==”、 “!=”、 “<=”、 “>=”、 “<”和“>”操作符都可以用于进行string类型字符串的比较，这些操作符两边都可以是string字符串，也可以一边是string字符串另一边是字符串数组。
+eg：
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s1 = "secondsecondthird";
+    string s2 = "secondthird";
+    if( s1 == s2 )
+        cout<< " == " <<endl;
+    if( s1 != s2 )
+        cout<< " != " <<endl;
+    if( s1 < s2 )
+        cout<< " < " <<endl;
+    if( s1 > s2 )
+        cout<< " > " <<endl;
+    return 0;
+}
+程序最终运行结果：
+!=
+<
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
