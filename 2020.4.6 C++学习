@@ -1,0 +1,135 @@
+--C++重载复制操作符
+//有点疑惑拷贝函数的真正含义，以及操作的对象。
+
+
+--C++重载下标操作符
+·下标操作符是必须要以类的成员函数的形式进行重载的。其在类中的声明格式如下：
+    返回类型 & operator[] (参数)
+或
+    const 返回类型 & operator[] (参数)
+eg：
+#include<iostream>
+#include<string>
+using namespace std;
+
+class Array
+{
+public:
+    Array(){length = 0; num = NULL;};
+    Array(int n);
+    int & operator[]( int );
+    const int & operator[]( int )const; //需要注意的是第一个下标操作符重载函数最后面不带有const，加上const意味着该成员函数是常成员函数，如果第一个函数后面也加上了const，则两个函数仅有返回值不相同，这个不足以用于区分函数，编译器会提示语法错误。
+    int getlength() const {return length;}
+private:
+    int length;
+    int * num;
+};
+
+Array::Array(int n)
+{
+    try
+    {
+        num = new int[n];
+    }
+    catch(bad_alloc)
+    {
+        cerr<<"allocate storage failure!"<<endl;
+        throw;
+    }
+    length = n;
+}
+
+int& Array::operator[](int i)
+{
+    if(i < 0 || i >= length)
+        throw string("out of bounds");
+    return num[i];
+}
+
+const int & Array::operator[](int i) const
+{
+    if(i < 0 || i >= length)
+        throw string("out of bounds");
+    return num[i];
+}
+
+int main()
+{
+    Array A(5);
+    int i;
+    try
+    {
+        for(i = 0; i < A.getlength(); i++)
+            A[i] = i;
+        for(i = 0 ;i < 6; i++ )
+            cout<< A[i] <<endl;
+    }
+    catch(string s)
+    {
+        cerr<< s <<", i = "<< i <<endl;
+    }
+   
+    return 0;
+}
+//注：在例1中即使我们没有定义const版本的，上面的例子也是可以正确运行的，但是非const成员函数不能处理const对象，因此通常我们在设计程序时，会同时提供两种版本的操作符重载函数。
+
+
+--C++函数调用重载
+·其声明语法只有一种形式：
+    返回类型 operator()( 参数列表 );
+
+
+--C++重载自增和自减操作符
+
+
+--C++重载转型操作符
+·转型操作符重载函数的声明语法如下：
+    operator 类型名 ();
+·转型操作符重载函数有几点需要注意的：
+1、函数没有返回类型；
+2、虽然没有返回类型但是函数体中必须有return语句，其返回类型是由类型名来指定的；
+3、转型操作符重载函数只能以类的成员函数的形式进行重载，而不能以友元函数或顶层函数的形式进行重载。
+
+
+--C++内存管理操作符重载
+·其重载形式既可以是类成员函数的形式，又可以是顶层函数的形式。
+·操作符new的重载函数有两种形式：
+    void * 类名::operator new ( size_t size )
+    {
+        //以类成员函数的形式重载new操作符
+    }
+和
+    void * operator new ( size_t size ) 
+    {
+        //以顶层函数的形式重载new操作符
+    }
+//注：两种方式的重载函数返回值都是相同的，返回值都是void *类型。重载函数的参数都有一个参数，且均为size_t类型。在重载new和new[]操作符时，无论是以何种形式进行重载的，重载函数的第一个参数必须是size_t类型，该参数表示的含义是要分配空间的大小，对于new[]的重载函数而言，size_t类型参数则表示所需要分配的所有空间的总和。当然，重载函数也可以有其它参数，其它参数可以根据需要增加，但是第一个参数必须是size_t类型。
+·同样的delete操作符也有两种重载形式：
+    void 类名:: operator delete ( void *ptr)
+    {
+        //以类成员函数的形式重载delete操作符
+    }
+和
+    void 类名:: operator delete ( void *ptr)
+    {
+        //以类成员函数的形式重载delete操作符
+    }
+//注：两种重载方式均是返回void，并且两种重载方式都必须有一个参数，void 指针，该指针指向需要释放的内存空间。重载delete和delete[]操作符同样也都必须有一个参数，该参数为一个void型指针，指向需要释放的内存空间，当然重载函数同样可以根据需要添加其它参数，但是第一个指向待释放的内存空间的void型指针这个参数必不可少。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
