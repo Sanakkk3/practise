@@ -1,25 +1,34 @@
 ·模板是另外一种代码重用机制。
 eg：有时候在设计程序的时候会遇到这样一种情况：需要设计的几个类，其功能都是一样的，仅仅只是需要操作的数据类型不同。遇到这样的情况，固然可以将所有的类都设计一遍，但是在C++中，我们有更好的方法：设计一个模板类。假设我们需要创建一个数组类，该数组可能是整型数组，也可能是double类型数组、string类型数组等，为此我们需要设计一个数组的模板类。
+https://blog.csdn.net/liitdar/article/details/80587058?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522158625177819724846443310%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=158625177819724846443310&biz_id=14&utm_source=distribute.pc_search_result.none-task-blog-soetl_SOETL-3
 
 
+--C++模板实例化
+http://www.weixueyuan.net/view/6399.html
 
 
+--C++模板中的函数式参数
+·在前面我们已经提到过模板类至少有一个类参数，但是可以有多个参数，这些参数中可以存在非类类型的参数，例如系统内建的普通数据类型参数或程序自定义的数据类型参数，我们将这种非类类型的参数称之为函数式参数。
+（我觉得就是说的模板头：template <class T>）
+eg:
+template< class T, int S, double R> //S和R就是函数式参数。
+class test
+{
+    //......
+};
+http://www.weixueyuan.net/view/6400.html
 
 
+--C++标准模板库（STL）的概念
+·STL（Standard Template Library）标准模板库是标准C++库中的一部分，标准模板库为C++提供了完善的数据结构及算法。标准模板库包括三部分：容器、算法和迭代器。容器是对象的集合，STL的容器有：vector、stack、queue、deque、list、set和map等。STL算法是对容器进行处理，比如排序、合并等操作。迭代器则是访问容器的一种机制。
+·除此之外，STL还提供了大量的算法用于操作容器。STL具有可扩展性，也就是说可以增加新的容器和算法。
+·STL基本容器可以分为：
+1、序列式容器，主要有list、vector、deque
+2、关联式容器，主要有set、multiset、map、multimap
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+--C++基本序列式容器
+·http://www.weixueyuan.net/view/6402.html
 
 
 
